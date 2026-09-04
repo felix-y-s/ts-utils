@@ -1,6 +1,6 @@
 {
   "name": "@felix_ys/ts-utils",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "여러 프로젝트에서 공유하는 프레임워크 무관 TypeScript 유틸리티 모음",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
