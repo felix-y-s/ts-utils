@@ -22,7 +22,8 @@ export declare function assertDefined<T>(value: T | null | undefined, message: s
  *
  * @param value 모든 case를 거치고 남은, 이론상 존재할 수 없는 값
  * @param label 어느 exhaustive check에서 발생했는지 식별하기 위한 라벨(에러 메시지에 포함)
- * @throws Error 항상 던진다 - 정상적으로 도달해서는 안 되는 코드 경로
+ * @throws UnhandledCaseError 항상 던진다 - 정상적으로 도달해서는 안 되는 코드 경로.
+ *   `error.label`, `error.value`로 개별 필드에 접근 가능
  * @example
  * enum Status { SUCCEEDED = 'SUCCEEDED', FAILED = 'FAILED' }
  *
@@ -31,6 +32,17 @@ export declare function assertDefined<T>(value: T | null | undefined, message: s
  *   if (status === Status.FAILED) return '실패';
  *   // 이후 Status에 새 값이 추가되면 아래 줄에서 컴파일 에러 발생
  *   return assertNever(status, 'handle/status');
+ * }
+ *
+ * @example
+ * // 호출부에서 구조화된 필드를 활용해 로깅하기
+ * try {
+ *   return assertNever(status, 'handle/status');
+ * } catch (error) {
+ *   if (error instanceof UnhandledCaseError) {
+ *     logger.error('처리 안 된 상태값', { label: error.label, value: error.value });
+ *   }
+ *   throw error;
  * }
  */
 export declare function assertNever(value: never, label: string): never;

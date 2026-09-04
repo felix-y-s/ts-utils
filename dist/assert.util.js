@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.assertDefined = assertDefined;
 exports.assertNever = assertNever;
+const unhandled_case_error_1 = require("./unhandled-case.error");
 /**
  * 값이 null이 아님을 단언한다.
  * @param value 검사할 값
@@ -29,7 +30,8 @@ function assertDefined(value, message) {
  *
  * @param value 모든 case를 거치고 남은, 이론상 존재할 수 없는 값
  * @param label 어느 exhaustive check에서 발생했는지 식별하기 위한 라벨(에러 메시지에 포함)
- * @throws Error 항상 던진다 - 정상적으로 도달해서는 안 되는 코드 경로
+ * @throws UnhandledCaseError 항상 던진다 - 정상적으로 도달해서는 안 되는 코드 경로.
+ *   `error.label`, `error.value`로 개별 필드에 접근 가능
  * @example
  * enum Status { SUCCEEDED = 'SUCCEEDED', FAILED = 'FAILED' }
  *
@@ -39,7 +41,18 @@ function assertDefined(value, message) {
  *   // 이후 Status에 새 값이 추가되면 아래 줄에서 컴파일 에러 발생
  *   return assertNever(status, 'handle/status');
  * }
+ *
+ * @example
+ * // 호출부에서 구조화된 필드를 활용해 로깅하기
+ * try {
+ *   return assertNever(status, 'handle/status');
+ * } catch (error) {
+ *   if (error instanceof UnhandledCaseError) {
+ *     logger.error('처리 안 된 상태값', { label: error.label, value: error.value });
+ *   }
+ *   throw error;
+ * }
  */
 function assertNever(value, label) {
-    throw new Error(`[${label}] 처리되지 않은 값: ${JSON.stringify(value)}`);
+    throw new unhandled_case_error_1.UnhandledCaseError(label, value);
 }

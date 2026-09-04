@@ -40,6 +40,22 @@ function handle(status: Status) {
 }
 ```
 
+호출되면 `UnhandledCaseError`(`Error` 상속)를 던진다. `label`, `value` 필드로
+개별 접근이 가능해, 도메인 로깅/모니터링에서 구조화된 정보로 활용할 수 있다.
+
+```typescript
+import { assertNever, UnhandledCaseError } from '@felix_ys/ts-utils';
+
+try {
+  return assertNever(status, 'handle/status');
+} catch (error) {
+  if (error instanceof UnhandledCaseError) {
+    logger.error('처리 안 된 상태값', { label: error.label, value: error.value });
+  }
+  throw error; // 도메인 에러로 감싸지 않고 그대로 재던지는 것을 권장
+}
+```
+
 ### assertDefined
 
 값이 null이 아님을 단언하고, 이후 코드에서 타입을 좁힌다.
