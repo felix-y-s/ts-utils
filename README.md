@@ -61,6 +61,27 @@ const result = await withRetry(() => fetchSomething(), {
 });
 ```
 
+반환값 기준으로 성공 여부를 직접 판정하려면 `isSuccess`를 넘긴다(예외가 없어도
+재시도하고 싶을 때, 예: 폴링).
+
+```typescript
+const result = await withRetry(() => pollJobStatus(jobId), {
+  maxRetries: 5,
+  delayMs: 1000,
+  isSuccess: (r) => r.status === 'DONE',
+});
+```
+
+**옵션(`RetryOptions`)**
+
+| 옵션 | 기본값 | 설명 |
+|---|---|---|
+| `maxRetries` | `3` | 최대 재시도 횟수(최초 시도 제외) |
+| `delayMs` | `500` | 재시도 기본 대기시간(ms). 지수 백오프로 `delayMs * attempt`만큼 대기(1차 재시도 `delayMs`, 2차 `delayMs * 2`, ...) |
+| `isSuccess` | `() => true` | 반환값으로 성공 여부를 판정하는 함수. 생략하면 예외 없이 반환되면 성공으로 간주 |
+
+모든 재시도가 소진되면 마지막 에러(또는 `isSuccess`가 계속 실패였을 경우 재시도 초과 에러)를 던진다.
+
 ## 개발
 
 ```bash

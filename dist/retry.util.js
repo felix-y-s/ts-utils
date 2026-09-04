@@ -7,6 +7,17 @@ exports.withRetry = withRetry;
  * @param options 재시도 옵션
  * @returns 성공한 경우 fn의 반환값
  * @throws 모든 재시도 소진 시 마지막 예외 또는 재시도 초과 에러
+ * @example
+ * // 예외가 나면 최대 3회까지, 시도 간격 500ms * 시도횟수로 재시도
+ * const data = await withRetry(() => fetchFromApi());
+ *
+ * @example
+ * // 예외 없이도 반환값 기준으로 성공 여부 판정, 옵션 커스터마이징
+ * const result = await withRetry(() => pollJobStatus(jobId), {
+ *   maxRetries: 5,
+ *   delayMs: 1000, // 1차 대기 1000ms, 2차 2000ms, 3차 3000ms ...
+ *   isSuccess: (r) => r.status === 'DONE',
+ * });
  */
 async function withRetry(fn, options = {}) {
     const { maxRetries = 3, delayMs = 500, isSuccess = () => true } = options;
